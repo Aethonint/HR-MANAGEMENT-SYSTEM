@@ -10,16 +10,15 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\AccountsManagerController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
+// Route::get('/home', function () {
+//     return view('home');
+// });
 
-Route::get('/home', function () {
-    return view('home');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -52,7 +51,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Admin Routes
-    Route::middleware(['role:Admin'])->prefix('admin')->group(function () {
+    Route::middleware(['role:Admin'])->prefix('admins')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'adminDashboard'])->name('adminDashboard');
         Route::get('/settings', [AdminController::class, 'adminSettings'])->name('adminSettings');
         // Add more Admin-specific routes here

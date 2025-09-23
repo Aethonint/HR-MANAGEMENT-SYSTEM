@@ -1,47 +1,79 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <title>Hostar - Login</title>
+    <link rel="icon" href="{{asset('admin/assets/images/favicon.ico')}}" type="image/x-icon">
+    <link href="{{asset('admin/assets/css/common.min.css')}}" rel="stylesheet">
+    <link href="{{asset('admin/assets/css/style.css')}}" rel="stylesheet"/>
+    <link href="{{asset('admin/assets/css/pages/extra_pages.css')}}" rel="stylesheet"/>
+</head>
+<body>
+  <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-login100">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+                <!-- Session Status -->
+                <x-auth-session-status class="mb-4" :status="session('status')" />
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                <!-- LOGIN FORM -->
+                <form method="POST" action="{{ route('login') }}" class="login100-form validate-form">
+                    @csrf
+
+                    <span class="login100-form-title p-b-45">Login</span>
+
+                    <!-- EMAIL -->
+                    <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
+                        <input class="input100" id="email" type="email" name="email"
+                               value="{{ old('email') }}" required autofocus autocomplete="username">
+                        <span class="focus-input100"></span>
+                        <span class="label-input100">Email</span>
+                        @error('email')
+                            <small class="text-danger d-block mt-1">{{ $message }}</small>
+                        @enderror
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div class="wrap-input100 validate-input" data-validate="Password is required">
+                        <input class="input100" id="password" type="password" name="password" required autocomplete="current-password">
+                        <span class="focus-input100"></span>
+                        <span class="label-input100">Password</span>
+                        @error('password')
+                            <small class="text-danger d-block mt-1">{{ $message }}</small>
+                        @enderror
+                    </div>
+
+                    <!-- REMEMBER & FORGOT -->
+                    <div class="flex-sb-m w-full p-t-15 p-b-20">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" id="remember_me" type="checkbox" name="remember">
+                                Remember me
+                            </label>
+                        </div>
+                        @if (Route::has('password.request'))
+                            <div>
+                                <a href="{{ route('password.request') }}" class="txt1">Forgot Password?</a>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- SUBMIT BUTTON -->
+                    <div class="container-login100-form-btn">
+                        <button type="submit" class="login100-form-btn">Login</button>
+                    </div>
+
+                    <!-- SOCIAL LINKS (optional) -->
+                    
+                </form>
+
+                <div class="login100-more" style="background-image: url('../../assets/images/pages/bg-01.png');">
+                </div>
+            </div>
         </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
-                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+    </div>
+<script src="{{asset('admin/assets/js/common.min.js')}}"></script>
+<script src="{{asset('admin/assets/js/pages/examples/pages.js')}}"></script>
+</body>
+</html>

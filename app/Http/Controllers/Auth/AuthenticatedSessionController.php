@@ -22,33 +22,46 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
-
-        $request->session()->regenerate();
-
-       // Authenticate the user
+ public function store(LoginRequest $request): RedirectResponse
+{
+    // Authenticate the user
     $request->authenticate();
 
     // Regenerate session to prevent session fixation
     $request->session()->regenerate();
 
-    // Check the authenticated user's role and redirect accordingly
     $user = $request->user();
 
-    if ($user->role == 'SuperAdmin') {
-        return redirect()->route('superAdminDashboard');
-    } elseif ($user->role == 'HRManager') {
-        return redirect()->route('hrManagerDashboard');
-    } elseif ($user->role == 'AccountsManager') {
-        return redirect()->route('accountsManagerDashboard');
-    } elseif ($user->role == 'Admin') {
-        return redirect()->route('adminDashboard');
-    } else {
-        return redirect()->route('staffDashboard');
+    // ✅ Check user status and show different messages
+    if ($user->status !== 'active') {
+        // Choose message based on status
+        $message = match ($user->status) {
+            'inactive'  => 'Your account is inactive. Please contact the administrator.',
+            'suspended' => 'Your account has been suspended. Contact support for details.',
+            'pending'   => 'Your account is pending approval. Please wait for confirmation.',
+            default     => 'Your account status is invalid. Please contact support.',
+        };
+
+        // Log out and invalidate session
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // Redirect back with status-specific error
+        return back()->withErrors(['email' => $message]);
     }
-    }
+
+    // ✅ Redirect based on user role
+    return match ($user->role) {
+        'SuperAdmin'      => redirect()->route('superAdminDashboard'),
+        'HRManager'       => redirect()->route('hrManagerDashboard'),
+        'AccountsManager' => redirect()->route('accountsManagerDashboard'),
+        'Admin'           => redirect()->route('adminDashboard'),
+        default           => redirect()->route('staffDashboard'),
+    };
+}
+
+
 
     /**
      * Destroy an authenticated session.
