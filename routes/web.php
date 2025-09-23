@@ -6,12 +6,63 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\HrManagerController;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\AccountsManagerController;
 
+// Helper function to handle redirection based on the user's role and status
+if (!function_exists('redirectBasedOnRole')) {
+    function redirectBasedOnRole($user) {
+        // ✅ Check user status and show different messages
+        if ($user->status !== 'active') {
+            // Choose message based on status
+            $message = match ($user->status) {
+                'inactive'  => 'Your account is inactive. Please contact the administrator.',
+                'suspended' => 'Your account has been suspended. Contact support for details.',
+                'pending'   => 'Your account is pending approval. Please wait for confirmation.',
+                default     => 'Your account status is invalid. Please contact support.',
+            };
+
+            // Log out and invalidate session
+            Auth::logout();
+            session()->invalidate();
+            session()->regenerateToken();
+
+            // Redirect back with status-specific error
+            return redirect()->route('login.index')->withErrors(['email' => $message]);
+        }
+
+        // ✅ Redirect based on user role
+        return match ($user->role) {
+            'SuperAdmin'      => redirect()->route('superAdminDashboard'),
+            'HRManager'       => redirect()->route('hrManagerDashboard'),
+            'AccountsManager' => redirect()->route('accountsManagerDashboard'),
+            'Admin'           => redirect()->route('adminDashboard'),
+            default           => redirect()->route('staffDashboard'),
+        };
+    }
+}
+
+// Show login page or redirect if already logged in
 Route::get('/', function () {
-    return redirect()->route('login');
-});
+    if (Auth::check()) {
+        return redirectBasedOnRole(Auth::user());  // Redirect based on role if logged in
+    }
+    return app(AuthenticatedSessionController::class)->create();  // Show login page if not logged in
+})->name('login.index');
+
+// Login page route
+Route::get('/login', function () {
+    if (Auth::check()) {
+        return redirectBasedOnRole(Auth::user());  // Redirect based on role if logged in
+    }
+    return app(AuthenticatedSessionController::class)->create();  // Show login page if not logged in
+})->name('login');
+
+// Handle login POST request
+Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
+
 // Route::get('/home', function () {
 //     return view('home');
 // });
