@@ -17,11 +17,29 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+   
+    // Fillable properties for mass assignment
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
+        'permissions',
+        'department_id',
+        'role',
+        'status',
+        'last_login',
+        'start_date',
+        'employee_id',
+        'joining_date',
         'password',
     ];
+
+    // Define the one-to-one relationship with Profile
+   public function profile()
+{
+    return $this->hasOne(Profile::class, 'user_id', 'id');
+}
+
 
     /**
      * The attributes that should be hidden for serialization.

@@ -83,7 +83,8 @@ Route::middleware(['auth'])->group(function () {
     // Super Admin Routes
     Route::middleware(['role:SuperAdmin'])->prefix('super-admin')->group(function () {
         Route::get('/dashboard', [SuperAdminController::class, 'superAdminDashboard'])->name('superAdminDashboard');
-        Route::get('/manage-users', [SuperAdminController::class, 'manageUsers'])->name('manageUsers');
+         Route::patch('/profile/update', [SuperAdminController::class, 'updateProfile'])->name('superAdmin.profile.update');
+        Route::get('/profile', [SuperAdminController::class, 'profile'])->name('profile');
         // Add more SuperAdmin-specific routes here
     });
 

@@ -18,8 +18,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             // Additional Fields
-            
-            $table->string('profile_picture')->nullable(); // Profile picture URL
             $table->json('permissions')->nullable(); // JSON for storing specific permissions
             $table->foreignId('department_id')->nullable(); // Foreign key for department
              $table->enum('role', ['SuperAdmin', 'HRManager', 'AccountsManager', 'Admin', 'Staff'])->default('Staff'); // User's role (Super Admin, HR Manager, etc.)
@@ -27,7 +25,6 @@ return new class extends Migration
             $table->timestamp('last_login')->nullable(); // Last login timestamp
             $table->date('start_date')->nullable(); // Date when the user started
             $table->integer('employee_id')->nullable(); // Employee ID (HR tracking)
-            $table->string('address')->nullable(); // User's address
             $table->date('joining_date')->nullable(); // Date when the user joined the company
             $table->string('password');
             $table->rememberToken();
